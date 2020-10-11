@@ -13,5 +13,10 @@
   "license": "MIT",
   "devDependencies": {
     "bs-platform": "^8.2.0"
+  },
+  "dependencies": {
+    "bs-let": "^0.1.16",
+    "decco": "^1.3.0",
+    "serbet": "^0.4.0"
   }
 }
