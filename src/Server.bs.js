@@ -55,11 +55,68 @@ var HelloEndpoint = {
   endpoint: endpoint
 };
 
+function body_in_decode(v) {
+  var dict = Js_json.classify(v);
+  if (typeof dict === "number") {
+    return Decco.error(undefined, "Not an object", v);
+  }
+  if (dict.TAG !== /* JSONObject */2) {
+    return Decco.error(undefined, "Not an object", v);
+  }
+  var name = Decco.stringFromJson(Belt_Option.getWithDefault(Js_dict.get(dict._0, "name"), null));
+  if (!name.TAG) {
+    return {
+            TAG: /* Ok */0,
+            _0: {
+              name: name._0
+            }
+          };
+  }
+  var e = name._0;
+  return {
+          TAG: /* Error */1,
+          _0: {
+            path: ".name" + e.path,
+            message: e.message,
+            value: e.value
+          }
+        };
+}
+
+function body_out_encode(v) {
+  return Js_dict.fromArray([[
+                "message",
+                Decco.stringToJson(v.message)
+              ]]);
+}
+
+var endpoint$1 = Serbet.jsonEndpoint(undefined, {
+      path: "/hello/json",
+      verb: /* POST */1,
+      body_in_decode: body_in_decode,
+      body_out_encode: body_out_encode,
+      handler: (function (body, _req) {
+          return Async.async({
+                      message: "Hey there, " + body.name
+                    });
+        })
+    });
+
+var HelloJsonEndpoint = {
+  body_in_decode: body_in_decode,
+  body_out_encode: body_out_encode,
+  endpoint: endpoint$1
+};
+
 var app = Serbet.application(undefined, {
       hd: endpoint,
-      tl: /* [] */0
+      tl: {
+        hd: endpoint$1,
+        tl: /* [] */0
+      }
     });
 
 exports.HelloEndpoint = HelloEndpoint;
+exports.HelloJsonEndpoint = HelloJsonEndpoint;
 exports.app = app;
 /* endpoint Not a pure module */
